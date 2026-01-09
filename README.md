@@ -41,13 +41,13 @@ antigravity-docs/
 ### Windows (PowerShell)
 
 ```powershell
-irm https://raw.githubusercontent.com/YOUR_USERNAME/antigravity-docs/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/idiey/antigravity-docs/main/install.ps1 -OutFile i.ps1; .\i.ps1 -Project; rm i.ps1
 ```
 
 ### macOS / Linux (Bash)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/antigravity-docs/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/idiey/antigravity-docs/main/install.sh | bash -s -- --project
 ```
 
 ### Manual Install
@@ -55,7 +55,7 @@ curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/antigravity-docs/main
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/antigravity-docs.git
+git clone https://github.com/idiey/antigravity-docs.git
 cd antigravity-docs
 ```
 

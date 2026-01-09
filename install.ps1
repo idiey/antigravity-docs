@@ -2,7 +2,7 @@
 # Antigravity Docs Installer for Windows
 # Documentation Standards for Google Antigravity/Gemini Code
 # Version: 1.2.0
-# Usage: irm https://raw.githubusercontent.com/idiey/antigravity-docs/main/install.ps1 | iex
+# Usage: irm https://raw.githubusercontent.com/idiey/antigravity-docs/main/install.ps1 -OutFile i.ps1; .\i.ps1 -Project; rm i.ps1
 #
 
 param(
