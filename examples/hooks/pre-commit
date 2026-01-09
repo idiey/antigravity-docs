@@ -1,0 +1,29 @@
+#!/bin/bash
+# Pre-commit hook for markdown linting
+# Copy to .git/hooks/pre-commit and make executable: chmod +x .git/hooks/pre-commit
+
+STAGED_MD=$(git diff --cached --name-only --diff-filter=ACM | grep '\.md$')
+
+if [ -n "$STAGED_MD" ]; then
+    echo "🔍 Linting staged markdown files..."
+    
+    # Check if markdownlint is installed
+    if ! command -v npx &> /dev/null; then
+        echo "⚠️  npx not found. Skipping markdown lint."
+        exit 0
+    fi
+    
+    # Run linter on staged files
+    echo "$STAGED_MD" | xargs npx markdownlint-cli2
+    
+    if [ $? -ne 0 ]; then
+        echo ""
+        echo "❌ Markdown linting failed!"
+        echo "   Fix issues above or use: git commit --no-verify"
+        exit 1
+    fi
+    
+    echo "✅ Markdown linting passed!"
+fi
+
+exit 0

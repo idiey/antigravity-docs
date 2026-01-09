@@ -14,17 +14,18 @@ This workflow creates a complete documentation structure for a new or existing p
 ## Steps
 
 // turbo
+
 1. Create the docs directory structure:
 
 ```bash
 mkdir -p docs/01-getting-started docs/02-architecture docs/03-development docs/04-deployment docs/05-user-guide
 ```
 
-2. Create the main docs/README.md with project overview and navigation links.
+1. Create the main docs/README.md with project overview and navigation links.
 
-3. Create README.md for each section folder with Table of Contents.
+2. Create README.md for each section folder with Table of Contents.
 
-4. Create initial documents in each section:
+3. Create initial documents in each section:
    - `01-getting-started/01-quick-start.md`
    - `02-architecture/01-overview.md`
    - `03-development/01-coding-standards.md`

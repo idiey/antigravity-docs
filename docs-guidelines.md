@@ -83,11 +83,13 @@ Structure information from general to specific:
 ### Examples
 
 ✅ **Good**:
+
 - `01-getting-started/`
 - `02-installation.md`
 - `03-configuration.md`
 
 ❌ **Bad**:
+
 - `GettingStarted/`
 - `installation_guide.md`
 - `howToConfigureTheSystem.md`
@@ -288,7 +290,85 @@ npx markdownlint-cli2 --fix "docs/**/*.md"
 - [Markdown All in One](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one) (VS Code)
 - [markdownlint](https://marketplace.visualstudio.com/items?itemName=DavidAnson.vscode-markdownlint) (VS Code)
 
+## IDE Integration
+
+### VS Code
+
+Install the [markdownlint extension](https://marketplace.visualstudio.com/items?itemName=DavidAnson.vscode-markdownlint) for real-time linting.
+
+Add to `.vscode/settings.json`:
+
+```json
+{
+  "markdownlint.config": {
+    "extends": ".markdownlintrc"
+  },
+  "editor.formatOnSave": true
+}
+```
+
+### JetBrains IDEs
+
+Install the **Markdown Navigator** plugin for IntelliJ, WebStorm, or PHPStorm.
+
+### Vim/Neovim
+
+Use ALE or similar linter plugin with markdownlint integration.
+
+## Pre-commit Hooks
+
+Auto-lint markdown files before commits to catch issues early.
+
+### Bash (macOS/Linux)
+
+Copy to `.git/hooks/pre-commit`:
+
+```bash
+#!/bin/bash
+STAGED_MD=$(git diff --cached --name-only --diff-filter=ACM | grep '\.md$')
+
+if [ -n "$STAGED_MD" ]; then
+    echo "Linting markdown..."
+    echo "$STAGED_MD" | xargs npx markdownlint-cli2
+    if [ $? -ne 0 ]; then
+        echo "❌ Fix issues or use: git commit --no-verify"
+        exit 1
+    fi
+    echo "✅ Linting passed!"
+fi
+```
+
+Make executable: `chmod +x .git/hooks/pre-commit`
+
+### PowerShell (Windows)
+
+See `examples/hooks/pre-commit.ps1` for Windows version.
+
+## CI/CD Integration
+
+Add to `.github/workflows/docs.yml`:
+
+```yaml
+name: Lint Documentation
+on:
+  push:
+    paths: ['docs/**', '*.md']
+  pull_request:
+    paths: ['docs/**', '*.md']
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install -g markdownlint-cli2
+      - run: npx markdownlint-cli2 "docs/**/*.md"
+```
+
 ---
 
-**Last Updated**: 2026-01-06
-**Version**: 1.0.0
+**Last Updated**: 2026-01-09
+**Version**: 1.1.0

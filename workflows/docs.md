@@ -29,9 +29,9 @@ docs/
     └── README.md
 ```
 
-2. Each folder README.md should contain a Table of Contents for that section.
+1. Each folder README.md should contain a Table of Contents for that section.
 
-3. Use numbered prefixes for files within each folder (01-, 02-, 03-).
+2. Use numbered prefixes for files within each folder (01-, 02-, 03-).
 
 ---
 
@@ -75,6 +75,7 @@ Group documentation by major aspects:
 ## Linting Documentation
 
 // turbo
+
 1. Run markdown linter to check for issues:
 
 ```bash

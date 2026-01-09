@@ -9,6 +9,7 @@ This workflow validates and auto-fixes markdown documentation.
 ## Quick Lint
 
 // turbo
+
 1. Check all documentation for issues:
 
 ```bash
