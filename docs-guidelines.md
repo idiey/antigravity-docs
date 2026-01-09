@@ -4,7 +4,8 @@
 
 ## Overview
 
-This guide establishes documentation standards that ensure consistency, accessibility, and maintainability across all projects using Antigravity.
+This guide establishes documentation standards that ensure consistency, accessibility,
+and maintainability across all projects using Antigravity.
 
 ## Core Principles
 
@@ -13,7 +14,7 @@ This guide establishes documentation standards that ensure consistency, accessib
 Group documentation by major aspects of the project:
 
 | Context | Purpose | Examples |
-|---------|---------|----------|
+| ------- | ------- | -------- |
 | `getting-started` | First-time setup | Installation, quick start, configuration |
 | `architecture` | System design | Database, API, patterns, security |
 | `development` | Developer workflow | Coding standards, testing, workflows |
@@ -27,7 +28,7 @@ Group documentation by major aspects of the project:
 
 Use numbered prefixes to indicate reading order and importance:
 
-```
+```text
 docs/
 ├── 01-getting-started/    # Read first
 ├── 02-architecture/       # Read second
@@ -37,7 +38,7 @@ docs/
 
 Within folders:
 
-```
+```text
 01-getting-started/
 ├── 01-quick-start.md      # Read first
 ├── 02-installation.md     # Read second
@@ -271,7 +272,7 @@ npx markdownlint-cli2 --fix "docs/**/*.md"
 ### Common Linting Issues
 
 | Issue | Rule | Fix |
-|-------|------|-----|
+| ----- | ---- | --- |
 | Trailing spaces | MD009 | Remove trailing whitespace |
 | Multiple blank lines | MD012 | Use single blank lines |
 | Long lines | MD013 | Wrap at 120 characters |
@@ -287,21 +288,24 @@ npx markdownlint-cli2 --fix "docs/**/*.md"
 
 ### Recommended
 
-- [Markdown All in One](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one) (VS Code)
-- [markdownlint](https://marketplace.visualstudio.com/items?itemName=DavidAnson.vscode-markdownlint) (VS Code)
+- [Markdown All in One][md-allinone] (VS Code)
+- [markdownlint][md-lint-ext] (VS Code)
+
+[md-allinone]: https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one
+[md-lint-ext]: https://marketplace.visualstudio.com/items?itemName=DavidAnson.vscode-markdownlint
 
 ## IDE Integration
 
 ### VS Code
 
-Install the [markdownlint extension](https://marketplace.visualstudio.com/items?itemName=DavidAnson.vscode-markdownlint) for real-time linting.
+Install the [markdownlint extension][md-lint-ext] for real-time linting.
 
 Add to `.vscode/settings.json`:
 
 ```json
 {
   "markdownlint.config": {
-    "extends": ".markdownlintrc"
+    "extends": ".markdownlint.json"
   },
   "editor.formatOnSave": true
 }

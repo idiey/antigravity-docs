@@ -9,7 +9,7 @@ This workflow creates a complete documentation structure for a new or existing p
 ## Prerequisites
 
 - Project directory exists
-- `.markdownlintrc` configuration (will be created if missing)
+- `.markdownlint.json` configuration (will be created if missing)
 
 ## Steps
 
@@ -18,7 +18,8 @@ This workflow creates a complete documentation structure for a new or existing p
 1. Create the docs directory structure:
 
 ```bash
-mkdir -p docs/01-getting-started docs/02-architecture docs/03-development docs/04-deployment docs/05-user-guide
+mkdir -p docs/01-getting-started docs/02-architecture docs/03-development \
+  docs/04-deployment docs/05-user-guide
 ```
 
 1. Create the main docs/README.md with project overview and navigation links.

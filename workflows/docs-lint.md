@@ -37,7 +37,7 @@ npx markdownlint-cli2 "docs/01-getting-started/**/*.md"
 ## Common Issues and Fixes
 
 | Issue | Rule | Fix |
-|-------|------|-----|
+| ----- | ---- | --- |
 | Trailing spaces | MD009 | Auto-fixable |
 | Multiple blank lines | MD012 | Auto-fixable |
 | Long lines (>120 chars) | MD013 | Wrap text manually |
@@ -47,7 +47,7 @@ npx markdownlint-cli2 "docs/01-getting-started/**/*.md"
 
 ## Configuration
 
-The `.markdownlintrc` file controls linting rules. Key settings:
+The `.markdownlint.json` file controls linting rules. Key settings:
 
 ```json
 {

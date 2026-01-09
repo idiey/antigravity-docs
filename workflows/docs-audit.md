@@ -60,7 +60,7 @@ npx markdown-link-check docs/**/*.md
 Create a coverage report:
 
 | Section | Status | Last Updated | Notes |
-|---------|--------|--------------|-------|
+| ------- | ------ | ------------ | ----- |
 | Getting Started | ✅ | YYYY-MM-DD | Complete |
 | Architecture | 🔄 | YYYY-MM-DD | Needs ERD update |
 | Development | ⚠️ | YYYY-MM-DD | Missing testing guide |

@@ -5,7 +5,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 
-This package provides a standardized structure, linting, and automation for creating consistent, high-quality documentation in projects using **Google Antigravity** (Gemini Code).
+This package provides a standardized structure, linting, and automation for creating
+consistent, high-quality documentation in projects using **Google Antigravity** (Gemini Code).
 
 ## Features
 
@@ -18,14 +19,14 @@ This package provides a standardized structure, linting, and automation for crea
 
 ## What's Included
 
-```
+```text
 antigravity-docs/
 ├── README.md                    # This file
 ├── LICENSE                      # MIT License
 ├── install.ps1                  # PowerShell installer (Windows)
 ├── install.sh                   # Bash installer (macOS/Linux)
 ├── docs-guidelines.md           # Full documentation standards
-├── .markdownlintrc              # Linter configuration
+├── .markdownlint.json           # Linter configuration
 ├── workflows/                   # Antigravity workflow files
 │   ├── docs.md                  # Main /docs command
 │   ├── docs-init.md             # /docs-init command
@@ -52,25 +53,29 @@ curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/antigravity-docs/main
 ### Manual Install
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/YOUR_USERNAME/antigravity-docs.git
 cd antigravity-docs
 ```
 
-2. Run the installer:
+1. Run the installer:
 
 **Windows:**
+
 ```powershell
 .\install.ps1
 ```
 
 **macOS/Linux:**
+
 ```bash
 chmod +x install.sh
 ./install.sh
 ```
 
-3. Verify installation:
+1. Verify installation:
+
 ```bash
 ls -la ~/.gemini/
 # Should see: workflows/, docs-guidelines.md, .markdownlintrc
@@ -81,9 +86,9 @@ ls -la ~/.gemini/
 The installer copies these files to your Antigravity configuration directory:
 
 | File | Location | Purpose |
-|------|----------|---------|
+| ---- | -------- | ------- |
 | `docs-guidelines.md` | `~/.gemini/` | Full documentation standards |
-| `.markdownlintrc` | `~/.gemini/` | Linter configuration |
+| `.markdownlint.json` | `~/.gemini/` | Linter configuration |
 | `docs.md` | `~/.gemini/workflows/` | Main `/docs` slash command |
 | `docs-init.md` | `~/.gemini/workflows/` | `/docs-init` slash command |
 | `docs-lint.md` | `~/.gemini/workflows/` | `/docs-lint` slash command |
@@ -96,7 +101,7 @@ The installer copies these files to your Antigravity configuration directory:
 After installation, use these commands in your Antigravity prompts:
 
 | Command | Description |
-|---------|-------------|
+| ------- | ----------- |
 | `/docs` | View documentation standards, templates, and best practices |
 | `/docs-init` | Initialize a new docs folder structure in your project |
 | `/docs-lint` | Run markdown linting on your documentation |
@@ -106,19 +111,19 @@ After installation, use these commands in your Antigravity prompts:
 
 Simply ask Antigravity:
 
-```
+```text
 /docs-init - Create the docs structure for my project
 ```
 
 ### Linting Documentation
 
-```
+```text
 /docs-lint - Check my documentation for issues and fix them
 ```
 
 ### Auditing Documentation
 
-```
+```text
 /docs-audit - Check if my docs are complete and synchronized with the codebase
 ```
 
@@ -126,7 +131,7 @@ Simply ask Antigravity:
 
 The standard structure follows this pattern:
 
-```
+```text
 docs/
 ├── README.md                    # Main documentation index
 ├── 01-getting-started/          # Priority 1
@@ -162,10 +167,10 @@ docs/
 
 ## Linting Rules
 
-The `.markdownlintrc` enforces these standards:
+The `.markdownlint.json` enforces these standards:
 
 | Rule | Setting | Description |
-|------|---------|-------------|
+| ---- | ------- | ----------- |
 | MD003 | ATX style | Headers use `#` syntax |
 | MD004 | Dash style | Use `-` for unordered lists |
 | MD007 | 2-space indent | Consistent indentation |
@@ -256,7 +261,7 @@ Edit `.markdownlintrc` to customize rules:
 
 Add more numbered folders as needed:
 
-```
+```text
 docs/
 ├── ...
 ├── 06-api/
@@ -270,12 +275,14 @@ docs/
 ### Workflows not recognized
 
 Ensure files are in the correct location:
+
 - Global: `~/.gemini/workflows/`
 - Project: `.agent/workflows/`
 
 ### Linter not found
 
 Install markdownlint:
+
 ```bash
 npm install -g markdownlint-cli2
 ```

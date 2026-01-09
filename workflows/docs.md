@@ -4,7 +4,8 @@ description: Create and manage documentation following antigravity-docs standard
 
 # Documentation Standards Workflow
 
-This workflow helps you create, manage, and validate documentation following the antigravity-docs standards - a context-based organization with numbered priority folders.
+This workflow helps you create, manage, and validate documentation following the
+antigravity-docs standards - a context-based organization with numbered priority folders.
 
 ## Quick Commands
 

@@ -1,6 +1,7 @@
 # Project Documentation
 
-Welcome to the project documentation. This structure follows the [antigravity-docs](https://github.com/YOUR_USERNAME/antigravity-docs) standards.
+Welcome to the project documentation. This structure follows the
+[antigravity-docs](https://github.com/YOUR_USERNAME/antigravity-docs) standards.
 
 ## Documentation Structure
 
@@ -45,7 +46,7 @@ End-user documentation.
 ## Quick Navigation
 
 | I want to... | Go to |
-|--------------|-------|
+| ------------ | ----- |
 | Get started quickly | [Quick Start](01-getting-started/01-quick-start.md) |
 | Understand the architecture | [Architecture Overview](02-architecture/01-overview.md) |
 | Set up development | [Development Setup](03-development/01-coding-standards.md) |

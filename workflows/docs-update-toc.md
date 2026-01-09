@@ -4,7 +4,8 @@ description: Update Table of Contents in all documentation README files
 
 # Update Documentation TOC
 
-This workflow regenerates Table of Contents in all README.md files based on current documentation structure.
+This workflow regenerates Table of Contents in all README.md files based on
+current documentation structure.
 
 ## Quick Update
 
@@ -64,7 +65,8 @@ npx markdown-link-check docs/**/*.md
 
 ## Output
 
-All README.md files will have updated Table of Contents reflecting the current documentation structure.
+All README.md files will have updated Table of Contents reflecting the current
+documentation structure.
 
 ## When to Run
 
