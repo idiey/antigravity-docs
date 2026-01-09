@@ -13,7 +13,7 @@ param(
 $ErrorActionPreference = "Stop"
 
 Write-Host ""
-Write-Host "🚀 Installing Antigravity Documentation Standards" -ForegroundColor Blue
+Write-Host "Installing Antigravity Documentation Standards" -ForegroundColor Blue
 Write-Host "==================================================" -ForegroundColor Blue
 Write-Host ""
 
@@ -25,20 +25,20 @@ $InstallMode = "remote"
 if ((Test-Path ".git") -and (Test-Path "docs-guidelines.md")) {
     $InstallMode = "local"
     $RepoDir = Get-Location
-    Write-Host "ℹ️  Installing from local repository" -ForegroundColor Blue
+    Write-Host "Info: Installing from local repository" -ForegroundColor Blue
 } else {
-    Write-Host "ℹ️  Installing from remote repository" -ForegroundColor Blue
+    Write-Host "Info: Installing from remote repository" -ForegroundColor Blue
 }
 
 Write-Host ""
 
 # Target directories
 if ($Project) {
-    Write-Host "ℹ️  Target: Project-level (.agent/workflows)" -ForegroundColor Blue
+    Write-Host "Info: Target: Project-level (.agent/workflows)" -ForegroundColor Blue
     $GeminiDir = Get-Location
     $WorkflowsDir = Join-Path $GeminiDir ".agent/workflows"
 } else {
-    Write-Host "ℹ️  Target: Global (~/.gemini)" -ForegroundColor Blue
+    Write-Host "Info: Target: Global (~/.gemini)" -ForegroundColor Blue
     $GeminiDir = Join-Path $env:USERPROFILE ".gemini"
     $WorkflowsDir = Join-Path $GeminiDir "workflows"
 }
@@ -59,7 +59,7 @@ $SkipLinter = $false
 try {
     $null = Get-Command npm -ErrorAction Stop
 } catch {
-    Write-Host "⚠️  Warning: npm not found. Skipping markdownlint installation." -ForegroundColor Yellow
+    Write-Host "Warning: npm not found. Skipping markdownlint installation." -ForegroundColor Yellow
     Write-Host "   Install Node.js/npm to enable markdown linting." -ForegroundColor Yellow
     $SkipLinter = $true
 }
@@ -73,7 +73,7 @@ function Install-File {
     )
 
     if ((Test-Path $DestFile) -and -not $Force) {
-        Write-Host "⚠️  $FileDesc already exists" -ForegroundColor Yellow
+        Write-Host "Warning: $FileDesc already exists" -ForegroundColor Yellow
         $response = Read-Host "Overwrite? (y/N)"
         if ($response -notmatch "^[Yy]$") {
             Write-Host "Skipping $FileDesc" -ForegroundColor Yellow
@@ -87,32 +87,32 @@ function Install-File {
         } else {
             Invoke-WebRequest -Uri "$RepoBase/$SourceFile" -OutFile $DestFile -ErrorAction Stop
         }
-        Write-Host "✓ $FileDesc installed" -ForegroundColor Green
+        Write-Host "Success: $FileDesc installed" -ForegroundColor Green
         return $true
     } catch {
-        Write-Host "✗ Failed to install $FileDesc : $_" -ForegroundColor Red
+        Write-Host "Error: Failed to install $FileDesc : $_" -ForegroundColor Red
         return $false
     }
 }
 
-Write-Host "📦 Installing files..." -ForegroundColor Blue
+Write-Host "Installing files..." -ForegroundColor Blue
 Write-Host ""
 
 # Install markdownlint-cli2 globally
 if (-not $SkipLinter) {
     Write-Host "Checking markdownlint-cli2..."
     try {
-        # Check if installed
-        npm list -g markdownlint-cli2 2>$null | Out-Null
-        if ($LASTEXITCODE -eq 0) {
-             Write-Host "✓ markdownlint-cli2 already installed" -ForegroundColor Green
+        # Simple check without complex redirection
+        $null = Get-Command markdownlint-cli2 -ErrorAction SilentlyContinue
+        if ($?) {
+             Write-Host "Success: markdownlint-cli2 already installed" -ForegroundColor Green
         } else {
              Write-Host "Installing markdownlint-cli2..."
-             npm install -g markdownlint-cli2 2>$null | Out-Null
-             Write-Host "✓ markdownlint-cli2 installed" -ForegroundColor Green
+             npm install -g markdownlint-cli2 | Out-Null
+             Write-Host "Success: markdownlint-cli2 installed" -ForegroundColor Green
         }
     } catch {
-        Write-Host "⚠️  Warning: Failed to install markdownlint-cli2" -ForegroundColor Yellow
+        Write-Host "Warning: Failed to install markdownlint-cli2" -ForegroundColor Yellow
         Write-Host "   You can install it manually: npm install -g markdownlint-cli2" -ForegroundColor Yellow
     }
     Write-Host ""
@@ -130,30 +130,30 @@ Install-File "workflows/docs-audit.md" (Join-Path $WorkflowsDir "docs-audit.md")
 Install-File "workflows/docs-update-toc.md" (Join-Path $WorkflowsDir "docs-update-toc.md") "/docs-update-toc command"
 
 Write-Host ""
-Write-Host "✅ Antigravity Documentation Standards installed successfully!" -ForegroundColor Green
+Write-Host "Antigravity Documentation Standards installed successfully!" -ForegroundColor Green
 Write-Host ""
-Write-Host "📖 Usage:"
+Write-Host "Usage:"
 Write-Host "   /docs              - View documentation standards and templates"
 Write-Host "   /docs-init         - Initialize docs folder structure"
 Write-Host "   /docs-lint         - Lint and fix markdown files"
 Write-Host "   /docs-audit        - Audit documentation completeness"
 Write-Host "   /docs-update-toc   - Update Table of Contents"
 Write-Host ""
-Write-Host "📋 Guidelines Location:"
+Write-Host "Guidelines Location:"
 Write-Host "   $GeminiDir\docs-guidelines.md"
 Write-Host ""
 if (-not $SkipLinter) {
-    Write-Host "🔍 Linting Commands:"
+    Write-Host "Linting Commands:"
     Write-Host "   npx markdownlint-cli2 `"docs/**/*.md`"      - Lint all markdown files"
     Write-Host "   npx markdownlint-cli2 --fix `"docs/*.md`"   - Auto-fix markdown issues"
     Write-Host ""
 }
-Write-Host "📚 Full README:"
+Write-Host "Full README:"
 if ($InstallMode -eq "local") {
     Write-Host "   Get-Content $RepoDir\README.md"
 } else {
     Write-Host "   https://github.com/idiey/antigravity-docs"
 }
 Write-Host ""
-Write-Host "🎉 You're all set! Try '/docs' in any project with Antigravity!" -ForegroundColor Green
+Write-Host "You're all set! Try '/docs' in any project with Antigravity!" -ForegroundColor Green
 Write-Host ""
