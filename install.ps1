@@ -1,6 +1,8 @@
 #
 # Antigravity Docs Installer for Windows
-# Installs documentation standards for Google Antigravity/Gemini Code
+# Documentation Standards for Google Antigravity/Gemini Code
+# Version: 1.1.0
+# Usage: irm https://raw.githubusercontent.com/idiey/antigravity-docs/main/install.ps1 | iex
 #
 
 param(
@@ -9,109 +11,134 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+Write-Host ""
+Write-Host "🚀 Installing Antigravity Documentation Standards" -ForegroundColor Blue
+Write-Host "==================================================" -ForegroundColor Blue
+Write-Host ""
+
 # GitHub raw URL base
 $RepoBase = "https://raw.githubusercontent.com/idiey/antigravity-docs/main"
 
-# Banner
-Write-Host ""
-Write-Host "╔═══════════════════════════════════════════════════════════╗" -ForegroundColor Blue
-Write-Host "║           Antigravity Docs Installer v1.1.0               ║" -ForegroundColor Blue
-Write-Host "║     Documentation Standards for Gemini Code Projects      ║" -ForegroundColor Blue
-Write-Host "╚═══════════════════════════════════════════════════════════╝" -ForegroundColor Blue
+# Detect installation mode
+$InstallMode = "remote"
+if ((Test-Path ".git") -and (Test-Path "docs-guidelines.md")) {
+    $InstallMode = "local"
+    $RepoDir = Get-Location
+    Write-Host "ℹ️  Installing from local repository" -ForegroundColor Blue
+} else {
+    Write-Host "ℹ️  Installing from remote repository" -ForegroundColor Blue
+}
+
 Write-Host ""
 
-# Target directory (Antigravity global config)
+# Target directories
 $GeminiDir = Join-Path $env:USERPROFILE ".gemini"
 $WorkflowsDir = Join-Path $GeminiDir "workflows"
 
-Write-Host "Installing to: $GeminiDir" -ForegroundColor Yellow
-Write-Host ""
-
 # Create directories
-Write-Host "[1/4] Creating directories..." -ForegroundColor Blue
 if (-not (Test-Path $GeminiDir)) {
+    Write-Host "Creating ~/.gemini directory..." -ForegroundColor Yellow
     New-Item -ItemType Directory -Path $GeminiDir -Force | Out-Null
 }
+
 if (-not (Test-Path $WorkflowsDir)) {
+    Write-Host "Creating ~/.gemini/workflows directory..." -ForegroundColor Yellow
     New-Item -ItemType Directory -Path $WorkflowsDir -Force | Out-Null
 }
-Write-Host "  ✓ Created $GeminiDir" -ForegroundColor Green
-Write-Host "  ✓ Created $WorkflowsDir" -ForegroundColor Green
 
-# Download configuration files
-Write-Host "[2/4] Downloading configuration files..." -ForegroundColor Blue
-
+# Check for npm
+$SkipLinter = $false
 try {
-    Invoke-WebRequest -Uri "$RepoBase/.markdownlintrc" -OutFile (Join-Path $GeminiDir ".markdownlintrc")
-    Write-Host "  ✓ Downloaded .markdownlintrc" -ForegroundColor Green
+    $null = Get-Command npm -ErrorAction Stop
 } catch {
-    Write-Host "  ✗ Failed to download .markdownlintrc: $_" -ForegroundColor Red
+    Write-Host "⚠️  Warning: npm not found. Skipping markdownlint installation." -ForegroundColor Yellow
+    Write-Host "   Install Node.js/npm to enable markdown linting." -ForegroundColor Yellow
+    $SkipLinter = $true
 }
 
-try {
-    Invoke-WebRequest -Uri "$RepoBase/docs-guidelines.md" -OutFile (Join-Path $GeminiDir "docs-guidelines.md")
-    Write-Host "  ✓ Downloaded docs-guidelines.md" -ForegroundColor Green
-} catch {
-    Write-Host "  ✗ Failed to download docs-guidelines.md: $_" -ForegroundColor Red
-}
+# Function to install file
+function Install-File {
+    param(
+        [string]$SourceFile,
+        [string]$DestFile,
+        [string]$FileDesc
+    )
 
-# Download workflow files
-Write-Host "[3/4] Downloading workflow files..." -ForegroundColor Blue
+    if ((Test-Path $DestFile) -and -not $Force) {
+        Write-Host "⚠️  $FileDesc already exists" -ForegroundColor Yellow
+        $response = Read-Host "Overwrite? (y/N)"
+        if ($response -notmatch "^[Yy]$") {
+            Write-Host "Skipping $FileDesc" -ForegroundColor Yellow
+            return $false
+        }
+    }
 
-$workflows = @(
-    "docs.md",
-    "docs-init.md",
-    "docs-lint.md",
-    "docs-audit.md",
-    "docs-update-toc.md"
-)
-
-foreach ($workflow in $workflows) {
     try {
-        Invoke-WebRequest -Uri "$RepoBase/workflows/$workflow" -OutFile (Join-Path $WorkflowsDir $workflow)
-        Write-Host "  ✓ Downloaded $workflow" -ForegroundColor Green
+        if ($InstallMode -eq "local") {
+            Copy-Item -Path (Join-Path $RepoDir $SourceFile) -Destination $DestFile -Force
+        } else {
+            Invoke-WebRequest -Uri "$RepoBase/$SourceFile" -OutFile $DestFile -ErrorAction Stop
+        }
+        Write-Host "✓ $FileDesc installed" -ForegroundColor Green
+        return $true
     } catch {
-        Write-Host "  ✗ Failed to download $workflow" -ForegroundColor Red
+        Write-Host "✗ Failed to install $FileDesc : $_" -ForegroundColor Red
+        return $false
     }
 }
 
-# Verify installation
-Write-Host "[4/4] Verifying installation..." -ForegroundColor Blue
-Write-Host ""
-Write-Host "Installed files:" -ForegroundColor Green
-Get-ChildItem -Path $GeminiDir -File | ForEach-Object {
-    Write-Host "  $($_.Name)"
-}
-Write-Host ""
-Write-Host "Installed workflows:" -ForegroundColor Green
-Get-ChildItem -Path $WorkflowsDir -File | ForEach-Object {
-    Write-Host "  $($_.Name)"
-}
+Write-Host "📦 Installing files..." -ForegroundColor Blue
 Write-Host ""
 
-# Check for Node.js
-Write-Host "Checking dependencies..." -ForegroundColor Blue
-try {
-    $null = Get-Command npx -ErrorAction Stop
-    Write-Host "  ✓ npx is available" -ForegroundColor Green
-} catch {
-    Write-Host "  ⚠ Node.js/npm not found. Install from https://nodejs.org/" -ForegroundColor Yellow
+# Install markdownlint-cli2 globally
+if (-not $SkipLinter) {
+    Write-Host "Installing markdownlint-cli2..."
+    try {
+        npm install -g markdownlint-cli2 2>$null | Out-Null
+        Write-Host "✓ markdownlint-cli2 installed" -ForegroundColor Green
+    } catch {
+        Write-Host "⚠️  Warning: Failed to install markdownlint-cli2" -ForegroundColor Yellow
+        Write-Host "   You can install it manually: npm install -g markdownlint-cli2" -ForegroundColor Yellow
+    }
+    Write-Host ""
 }
 
+# Install configuration files
+Install-File "docs-guidelines.md" (Join-Path $GeminiDir "docs-guidelines.md") "Documentation guidelines"
+Install-File ".markdownlint.json" (Join-Path $GeminiDir ".markdownlint.json") "Markdownlint configuration"
+
+# Install workflow files
+Install-File "workflows/docs.md" (Join-Path $WorkflowsDir "docs.md") "/docs command"
+Install-File "workflows/docs-init.md" (Join-Path $WorkflowsDir "docs-init.md") "/docs-init command"
+Install-File "workflows/docs-lint.md" (Join-Path $WorkflowsDir "docs-lint.md") "/docs-lint command"
+Install-File "workflows/docs-audit.md" (Join-Path $WorkflowsDir "docs-audit.md") "/docs-audit command"
+Install-File "workflows/docs-update-toc.md" (Join-Path $WorkflowsDir "docs-update-toc.md") "/docs-update-toc command"
+
 Write-Host ""
-Write-Host "╔═══════════════════════════════════════════════════════════╗" -ForegroundColor Green
-Write-Host "║              Installation Complete! 🎉                     ║" -ForegroundColor Green
-Write-Host "╚═══════════════════════════════════════════════════════════╝" -ForegroundColor Green
+Write-Host "✅ Antigravity Documentation Standards installed successfully!" -ForegroundColor Green
 Write-Host ""
-Write-Host "Available slash commands in Antigravity:"
+Write-Host "📖 Usage:"
+Write-Host "   /docs              - View documentation standards and templates"
+Write-Host "   /docs-init         - Initialize docs folder structure"
+Write-Host "   /docs-lint         - Lint and fix markdown files"
+Write-Host "   /docs-audit        - Audit documentation completeness"
+Write-Host "   /docs-update-toc   - Update Table of Contents"
 Write-Host ""
-Write-Host "  /docs           " -ForegroundColor Blue -NoNewline; Write-Host "- View documentation standards"
-Write-Host "  /docs-init      " -ForegroundColor Blue -NoNewline; Write-Host "- Initialize docs folder structure"
-Write-Host "  /docs-lint      " -ForegroundColor Blue -NoNewline; Write-Host "- Lint markdown files"
-Write-Host "  /docs-audit     " -ForegroundColor Blue -NoNewline; Write-Host "- Audit documentation completeness"
-Write-Host "  /docs-update-toc" -ForegroundColor Blue -NoNewline; Write-Host "- Update README Table of Contents"
+Write-Host "📋 Guidelines Location:"
+Write-Host "   ~/.gemini/docs-guidelines.md"
 Write-Host ""
-Write-Host "Get started by typing " -NoNewline
-Write-Host "/docs" -ForegroundColor Yellow -NoNewline
-Write-Host " in Antigravity!"
+if (-not $SkipLinter) {
+    Write-Host "🔍 Linting Commands:"
+    Write-Host "   npx markdownlint-cli2 `"docs/**/*.md`"      - Lint all markdown files"
+    Write-Host "   npx markdownlint-cli2 --fix `"docs/*.md`"   - Auto-fix markdown issues"
+    Write-Host ""
+}
+Write-Host "📚 Full README:"
+if ($InstallMode -eq "local") {
+    Write-Host "   Get-Content $RepoDir\README.md"
+} else {
+    Write-Host "   https://github.com/idiey/antigravity-docs"
+}
+Write-Host ""
+Write-Host "🎉 You're all set! Try '/docs' in any project with Antigravity!" -ForegroundColor Green
 Write-Host ""
