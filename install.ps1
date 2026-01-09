@@ -9,19 +9,16 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+# GitHub raw URL base
+$RepoBase = "https://raw.githubusercontent.com/idiey/antigravity-docs/main"
+
 # Banner
 Write-Host ""
 Write-Host "╔═══════════════════════════════════════════════════════════╗" -ForegroundColor Blue
-Write-Host "║           Antigravity Docs Installer v1.0.0               ║" -ForegroundColor Blue
+Write-Host "║           Antigravity Docs Installer v1.1.0               ║" -ForegroundColor Blue
 Write-Host "║     Documentation Standards for Gemini Code Projects      ║" -ForegroundColor Blue
 Write-Host "╚═══════════════════════════════════════════════════════════╝" -ForegroundColor Blue
 Write-Host ""
-
-# Determine script directory
-$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-if (-not $ScriptDir) {
-    $ScriptDir = Get-Location
-}
 
 # Target directory (Antigravity global config)
 $GeminiDir = Join-Path $env:USERPROFILE ".gemini"
@@ -41,36 +38,41 @@ if (-not (Test-Path $WorkflowsDir)) {
 Write-Host "  ✓ Created $GeminiDir" -ForegroundColor Green
 Write-Host "  ✓ Created $WorkflowsDir" -ForegroundColor Green
 
-# Copy configuration files
-Write-Host "[2/4] Copying configuration files..." -ForegroundColor Blue
+# Download configuration files
+Write-Host "[2/4] Downloading configuration files..." -ForegroundColor Blue
 
-$markdownlintrc = Join-Path $ScriptDir ".markdownlintrc"
-if (Test-Path $markdownlintrc) {
-    Copy-Item $markdownlintrc -Destination (Join-Path $GeminiDir ".markdownlintrc") -Force
-    Write-Host "  ✓ Copied .markdownlintrc" -ForegroundColor Green
-} else {
-    Write-Host "  ⚠ .markdownlintrc not found, skipping" -ForegroundColor Yellow
+try {
+    Invoke-WebRequest -Uri "$RepoBase/.markdownlintrc" -OutFile (Join-Path $GeminiDir ".markdownlintrc")
+    Write-Host "  ✓ Downloaded .markdownlintrc" -ForegroundColor Green
+} catch {
+    Write-Host "  ✗ Failed to download .markdownlintrc: $_" -ForegroundColor Red
 }
 
-$docsGuidelines = Join-Path $ScriptDir "docs-guidelines.md"
-if (Test-Path $docsGuidelines) {
-    Copy-Item $docsGuidelines -Destination (Join-Path $GeminiDir "docs-guidelines.md") -Force
-    Write-Host "  ✓ Copied docs-guidelines.md" -ForegroundColor Green
-} else {
-    Write-Host "  ⚠ docs-guidelines.md not found, skipping" -ForegroundColor Yellow
+try {
+    Invoke-WebRequest -Uri "$RepoBase/docs-guidelines.md" -OutFile (Join-Path $GeminiDir "docs-guidelines.md")
+    Write-Host "  ✓ Downloaded docs-guidelines.md" -ForegroundColor Green
+} catch {
+    Write-Host "  ✗ Failed to download docs-guidelines.md: $_" -ForegroundColor Red
 }
 
-# Copy workflow files
-Write-Host "[3/4] Copying workflow files..." -ForegroundColor Blue
-$workflowsSrc = Join-Path $ScriptDir "workflows"
-if (Test-Path $workflowsSrc) {
-    Get-ChildItem -Path $workflowsSrc -Filter "*.md" | ForEach-Object {
-        Copy-Item $_.FullName -Destination (Join-Path $WorkflowsDir $_.Name) -Force
-        Write-Host "  ✓ Copied $($_.Name)" -ForegroundColor Green
+# Download workflow files
+Write-Host "[3/4] Downloading workflow files..." -ForegroundColor Blue
+
+$workflows = @(
+    "docs.md",
+    "docs-init.md",
+    "docs-lint.md",
+    "docs-audit.md",
+    "docs-update-toc.md"
+)
+
+foreach ($workflow in $workflows) {
+    try {
+        Invoke-WebRequest -Uri "$RepoBase/workflows/$workflow" -OutFile (Join-Path $WorkflowsDir $workflow)
+        Write-Host "  ✓ Downloaded $workflow" -ForegroundColor Green
+    } catch {
+        Write-Host "  ✗ Failed to download $workflow" -ForegroundColor Red
     }
-} else {
-    Write-Host "  ✗ workflows/ directory not found" -ForegroundColor Red
-    exit 1
 }
 
 # Verify installation
@@ -103,10 +105,11 @@ Write-Host "╚═════════════════════�
 Write-Host ""
 Write-Host "Available slash commands in Antigravity:"
 Write-Host ""
-Write-Host "  /docs       " -ForegroundColor Blue -NoNewline; Write-Host "- View documentation standards"
-Write-Host "  /docs-init  " -ForegroundColor Blue -NoNewline; Write-Host "- Initialize docs folder structure"
-Write-Host "  /docs-lint  " -ForegroundColor Blue -NoNewline; Write-Host "- Lint markdown files"
-Write-Host "  /docs-audit " -ForegroundColor Blue -NoNewline; Write-Host "- Audit documentation completeness"
+Write-Host "  /docs           " -ForegroundColor Blue -NoNewline; Write-Host "- View documentation standards"
+Write-Host "  /docs-init      " -ForegroundColor Blue -NoNewline; Write-Host "- Initialize docs folder structure"
+Write-Host "  /docs-lint      " -ForegroundColor Blue -NoNewline; Write-Host "- Lint markdown files"
+Write-Host "  /docs-audit     " -ForegroundColor Blue -NoNewline; Write-Host "- Audit documentation completeness"
+Write-Host "  /docs-update-toc" -ForegroundColor Blue -NoNewline; Write-Host "- Update README Table of Contents"
 Write-Host ""
 Write-Host "Get started by typing " -NoNewline
 Write-Host "/docs" -ForegroundColor Yellow -NoNewline
