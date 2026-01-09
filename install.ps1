@@ -1,12 +1,13 @@
 #
 # Antigravity Docs Installer for Windows
 # Documentation Standards for Google Antigravity/Gemini Code
-# Version: 1.1.0
+# Version: 1.2.0
 # Usage: irm https://raw.githubusercontent.com/idiey/antigravity-docs/main/install.ps1 | iex
 #
 
 param(
-    [switch]$Force
+    [switch]$Force,
+    [switch]$Project
 )
 
 $ErrorActionPreference = "Stop"
@@ -32,17 +33,24 @@ if ((Test-Path ".git") -and (Test-Path "docs-guidelines.md")) {
 Write-Host ""
 
 # Target directories
-$GeminiDir = Join-Path $env:USERPROFILE ".gemini"
-$WorkflowsDir = Join-Path $GeminiDir "workflows"
+if ($Project) {
+    Write-Host "ℹ️  Target: Project-level (.agent/workflows)" -ForegroundColor Blue
+    $GeminiDir = Get-Location
+    $WorkflowsDir = Join-Path $GeminiDir ".agent/workflows"
+} else {
+    Write-Host "ℹ️  Target: Global (~/.gemini)" -ForegroundColor Blue
+    $GeminiDir = Join-Path $env:USERPROFILE ".gemini"
+    $WorkflowsDir = Join-Path $GeminiDir "workflows"
+}
 
 # Create directories
 if (-not (Test-Path $GeminiDir)) {
-    Write-Host "Creating ~/.gemini directory..." -ForegroundColor Yellow
+    Write-Host "Creating $GeminiDir directory..." -ForegroundColor Yellow
     New-Item -ItemType Directory -Path $GeminiDir -Force | Out-Null
 }
 
 if (-not (Test-Path $WorkflowsDir)) {
-    Write-Host "Creating ~/.gemini/workflows directory..." -ForegroundColor Yellow
+    Write-Host "Creating $WorkflowsDir directory..." -ForegroundColor Yellow
     New-Item -ItemType Directory -Path $WorkflowsDir -Force | Out-Null
 }
 
@@ -92,10 +100,17 @@ Write-Host ""
 
 # Install markdownlint-cli2 globally
 if (-not $SkipLinter) {
-    Write-Host "Installing markdownlint-cli2..."
+    Write-Host "Checking markdownlint-cli2..."
     try {
-        npm install -g markdownlint-cli2 2>$null | Out-Null
-        Write-Host "✓ markdownlint-cli2 installed" -ForegroundColor Green
+        # Check if installed
+        npm list -g markdownlint-cli2 2>$null | Out-Null
+        if ($LASTEXITCODE -eq 0) {
+             Write-Host "✓ markdownlint-cli2 already installed" -ForegroundColor Green
+        } else {
+             Write-Host "Installing markdownlint-cli2..."
+             npm install -g markdownlint-cli2 2>$null | Out-Null
+             Write-Host "✓ markdownlint-cli2 installed" -ForegroundColor Green
+        }
     } catch {
         Write-Host "⚠️  Warning: Failed to install markdownlint-cli2" -ForegroundColor Yellow
         Write-Host "   You can install it manually: npm install -g markdownlint-cli2" -ForegroundColor Yellow
@@ -125,7 +140,7 @@ Write-Host "   /docs-audit        - Audit documentation completeness"
 Write-Host "   /docs-update-toc   - Update Table of Contents"
 Write-Host ""
 Write-Host "📋 Guidelines Location:"
-Write-Host "   ~/.gemini/docs-guidelines.md"
+Write-Host "   $GeminiDir\docs-guidelines.md"
 Write-Host ""
 if (-not $SkipLinter) {
     Write-Host "🔍 Linting Commands:"

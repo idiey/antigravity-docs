@@ -2,14 +2,12 @@
 
 # Antigravity Docs Installer
 # Documentation Standards for Google Antigravity/Gemini Code
-# Version: 1.1.0
-# Usage: curl -fsSL https://raw.githubusercontent.com/idiey/antigravity-docs/main/install.sh | bash
+# Version: 1.2.0
+# Usage: 
+#   Global: curl -fsSL https://raw.githubusercontent.com/idiey/antigravity-docs/main/install.sh | bash
+#   Project: curl -fsSL https://raw.githubusercontent.com/idiey/antigravity-docs/main/install.sh | bash -s -- --project
 
 set -e
-
-echo "🚀 Installing Antigravity Documentation Standards"
-echo "=================================================="
-echo ""
 
 # Colors for output
 RED='\033[0;31m'
@@ -17,6 +15,20 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
+
+echo "🚀 Installing Antigravity Documentation Standards"
+echo "=================================================="
+echo ""
+
+# Parse arguments
+INSTALL_TARGET="global"
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        -p|--project) INSTALL_TARGET="project" ;;
+        *) echo "Unknown parameter passed: $1"; exit 1 ;;
+    esac
+    shift
+done
 
 # Detect installation method
 if [ -d ".git" ] && [ -f "docs-guidelines.md" ]; then
@@ -33,18 +45,26 @@ fi
 
 echo ""
 
-# Target directories (Antigravity global config)
-GEMINI_DIR="$HOME/.gemini"
-WORKFLOWS_DIR="$GEMINI_DIR/workflows"
+if [ "$INSTALL_TARGET" = "project" ]; then
+    echo -e "${BLUE}ℹ️  Target: Project-level (.agent/workflows)${NC}"
+    GEMINI_DIR="."
+    WORKFLOWS_DIR=".agent/workflows"
+else
+    echo -e "${BLUE}ℹ️  Target: Global (~/.gemini)${NC}"
+    GEMINI_DIR="$HOME/.gemini"
+    WORKFLOWS_DIR="$GEMINI_DIR/workflows"
+fi
+
+echo ""
 
 # Create directories
 if [ ! -d "$GEMINI_DIR" ]; then
-    echo -e "${YELLOW}Creating ~/.gemini directory...${NC}"
+    echo -e "${YELLOW}Creating $GEMINI_DIR directory...${NC}"
     mkdir -p "$GEMINI_DIR"
 fi
 
 if [ ! -d "$WORKFLOWS_DIR" ]; then
-    echo -e "${YELLOW}Creating ~/.gemini/workflows directory...${NC}"
+    echo -e "${YELLOW}Creating $WORKFLOWS_DIR directory...${NC}"
     mkdir -p "$WORKFLOWS_DIR"
 fi
 
@@ -64,6 +84,8 @@ install_file() {
 
     if [ -f "$dest_file" ]; then
         echo -e "${YELLOW}⚠️  $file_desc already exists${NC}"
+        # Only prompt if fully interactive terminal, otherwise assume yes or provide flag in future
+        # For now, simplistic check
         read -p "Overwrite? (y/N): " -n 1 -r
         echo
         if [[ ! $REPLY =~ ^[Yy]$ ]]; then
@@ -90,14 +112,19 @@ install_file() {
 echo "📦 Installing files..."
 echo ""
 
-# Install markdownlint-cli2 globally
+# Install markdownlint-cli2 globally (only needed once, so typically fine to keep global check)
 if [ -z "$SKIP_LINTER" ]; then
-    echo "Installing markdownlint-cli2..."
-    if npm install -g markdownlint-cli2 &> /dev/null; then
-        echo -e "${GREEN}✓${NC} markdownlint-cli2 installed"
+    echo "Checking markdownlint-cli2..."
+    if npm list -g markdownlint-cli2 &> /dev/null; then
+        echo -e "${GREEN}✓${NC} markdownlint-cli2 already installed"
     else
-        echo -e "${YELLOW}⚠️  Warning: Failed to install markdownlint-cli2${NC}"
-        echo -e "${YELLOW}   You can install it manually: npm install -g markdownlint-cli2${NC}"
+        echo "Installing markdownlint-cli2..."
+        if npm install -g markdownlint-cli2 &> /dev/null; then
+            echo -e "${GREEN}✓${NC} markdownlint-cli2 installed"
+        else
+            echo -e "${YELLOW}⚠️  Warning: Failed to install markdownlint-cli2${NC}"
+            echo -e "${YELLOW}   You can install it manually: npm install -g markdownlint-cli2${NC}"
+        fi
     fi
     echo ""
 fi
@@ -124,7 +151,7 @@ echo "   /docs-audit        - Audit documentation completeness"
 echo "   /docs-update-toc   - Update Table of Contents"
 echo ""
 echo "📋 Guidelines Location:"
-echo "   ~/.gemini/docs-guidelines.md"
+echo "   $GEMINI_DIR/docs-guidelines.md"
 echo ""
 if [ -z "$SKIP_LINTER" ]; then
 echo "🔍 Linting Commands:"
