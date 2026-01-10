@@ -37,9 +37,9 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 # Detect installation method - only local if we're in the actual antigravity-docs repo
-# Check for workflows folder which only exists in the source repo
-if [ -d ".git" ] && [ -f "workflows/docs.md" ] && [ -f "install.sh" ]; then
-    # Running from cloned repository
+# Check for LICENSE file and workflows folder which only exist in the source repo
+if [ -f "LICENSE" ] && [ -f "workflows/docs.md" ] && [ -f "workflows/plan-init.md" ]; then
+    # Running from cloned antigravity-docs repository
     INSTALL_MODE="local"
     REPO_DIR="$(pwd)"
     echo -e "${BLUE}Info: Installing from local repository${NC}"

@@ -26,9 +26,10 @@ Write-Host ""
 $RepoBase = "https://raw.githubusercontent.com/idiey/antigravity-docs/main"
 
 # Detect installation mode - only local if we're in the actual antigravity-docs repo
-# Check for workflows folder which only exists in the source repo
+# Check for LICENSE file and workflows folder which only exist in the source repo
 $InstallMode = "remote"
-if ((Test-Path ".git") -and (Test-Path "workflows/docs.md") -and (Test-Path "install.ps1")) {
+$IsAntigravityDocsRepo = (Test-Path "LICENSE") -and (Test-Path "workflows/docs.md") -and (Test-Path "workflows/plan-init.md")
+if ($IsAntigravityDocsRepo) {
     $InstallMode = "local"
     $RepoDir = Get-Location
     Write-Host "Info: Installing from local repository" -ForegroundColor Blue
