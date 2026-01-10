@@ -85,6 +85,8 @@ ls -la ~/.gemini/
 
 The installer copies these files to your Antigravity configuration directory:
 
+### Default Installation
+
 | File | Location | Purpose |
 | ---- | -------- | ------- |
 | `docs-guidelines.md` | `~/.gemini/` | Full documentation standards |
@@ -93,6 +95,18 @@ The installer copies these files to your Antigravity configuration directory:
 | `docs-init.md` | `~/.gemini/workflows/` | `/docs-init` slash command |
 | `docs-lint.md` | `~/.gemini/workflows/` | `/docs-lint` slash command |
 | `docs-audit.md` | `~/.gemini/workflows/` | `/docs-audit` slash command |
+| `docs-update-toc.md` | `~/.gemini/workflows/` | `/docs-update-toc` slash command |
+| `docs-update.md` | `~/.gemini/workflows/` | `/docs-update` slash command |
+
+### Optional: Planning Workflows (with `-Plan` flag)
+
+| File | Location | Purpose |
+| ---- | -------- | ------- |
+| `plan-init.md` | `~/.gemini/workflows/` | `/plan-init` slash command |
+| `plan-daily.md` | `~/.gemini/workflows/` | `/plan-daily` slash command |
+| `plan-sprint.md` | `~/.gemini/workflows/` | `/plan-sprint` slash command |
+| `plan-checkpoint.md` | `~/.gemini/workflows/` | `/plan-checkpoint` slash command |
+
 
 ## Usage
 
@@ -100,12 +114,27 @@ The installer copies these files to your Antigravity configuration directory:
 
 After installation, use these commands in your Antigravity prompts:
 
+#### Documentation Commands (Default)
+
 | Command | Description |
 | ------- | ----------- |
 | `/docs` | View documentation standards, templates, and best practices |
 | `/docs-init` | Initialize a new docs folder structure in your project |
 | `/docs-lint` | Run markdown linting on your documentation |
 | `/docs-audit` | Audit documentation for completeness and accuracy |
+| `/docs-update-toc` | Update Table of Contents in all README files |
+| `/docs-update` | Update antigravity-docs to the latest version |
+
+#### Planning Commands (Optional)
+
+> Install with `-Plan` flag or run `/plan-init` to enable these commands.
+
+| Command | Description |
+| ------- | ----------- |
+| `/plan-init` | Initialize the `.plan` folder structure |
+| `/plan-daily` | Create or update daily achievement entry |
+| `/plan-sprint` | Create or manage sprint planning documents |
+| `/plan-checkpoint` | Create a checkpoint to resume work later |
 
 ### Creating Documentation
 
@@ -126,6 +155,73 @@ Simply ask Antigravity:
 ```text
 /docs-audit - Check if my docs are complete and synchronized with the codebase
 ```
+
+## Daily Developer Workflow
+
+Here's how to use both `/docs` and `/plan` commands in your daily work:
+
+### Morning: Start of Day
+
+```text
+/plan-daily - Show me what I was working on yesterday and what's planned for today
+```
+
+Antigravity reads yesterday's entry and creates today's file with:
+
+- Yesterday's unfinished tasks
+- Today's goals from sprint
+- Context to resume work
+
+### Mid-Morning: Resume Coding
+
+```text
+/plan-checkpoint - Load my last checkpoint for the authentication feature
+```
+
+Antigravity provides:
+
+- Files you were editing
+- Current progress
+- Next steps to continue
+
+### Afternoon: Adding Documentation
+
+```text
+/docs - I need to document the new OAuth integration
+```
+
+Antigravity uses documentation standards to help write proper docs.
+
+### Late Afternoon: Code Review
+
+```text
+/docs-audit - Check if my documentation is complete and matches the code
+```
+
+Antigravity scans `docs/` folder and validates against codebase.
+
+### End of Day: Wrap Up
+
+```text
+/plan-checkpoint - Save my current work state for tomorrow
+```
+
+Creates a checkpoint with what's completed, in progress, and context for resumption.
+
+```text
+/plan-daily - Update my achievements for today
+```
+
+Updates today's daily log with completed tasks and notes for tomorrow.
+
+### Weekly: Sprint Planning
+
+```text
+/plan-sprint - Create sprint 2 planning
+```
+
+Creates a new sprint document with goals and tasks for next week.
+
 
 ## Documentation Structure
 
@@ -156,6 +252,35 @@ docs/
     ├── README.md
     └── 01-introduction.md
 ```
+
+## Planning Structure (Optional)
+
+When using the `/plan-init` command, this structure is added to your `docs/` folder:
+
+```text
+docs/
+├── ...existing folders...
+└── 06-plan/                       # Project planning (optional)
+    ├── README.md                  # Index and quick reference
+    ├── 01-daily/                  # Daily achievement logs
+    │   ├── README.md              # Folder overview
+    │   ├── TEMPLATE.md            # Template for daily entries
+    │   └── 2026-01-10.md          # Example: today's entry
+    ├── 02-sprints/                # Sprint planning
+    │   ├── README.md              # Sprint overview
+    │   ├── TEMPLATE.md            # Sprint template
+    │   └── sprint-01.md           # Example sprint
+    ├── 03-checkpoints/            # Work resumption points
+    │   ├── README.md              # Checkpoint overview
+    │   ├── TEMPLATE.md            # Checkpoint template
+    │   └── checkpoint-01.md       # Example checkpoint
+    └── 04-antigravity/            # Antigravity-generated artifacts
+        ├── README.md              # Overview
+        ├── implementation-plans/  # Implementation plans
+        ├── walkthroughs/          # Completed work walkthroughs
+        └── todo/                  # Suggested todo items
+```
+
 
 ## Key Principles
 

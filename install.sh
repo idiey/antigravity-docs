@@ -2,10 +2,11 @@
 
 # Antigravity Docs Installer
 # Documentation Standards for Google Antigravity/Gemini Code
-# Version: 1.2.0
+# Version: 1.3.0
 # Usage: 
 #   Global: curl -fsSL https://raw.githubusercontent.com/idiey/antigravity-docs/main/install.sh | bash
 #   Project: curl -fsSL https://raw.githubusercontent.com/idiey/antigravity-docs/main/install.sh | bash -s -- --project
+#   With Plan: curl -fsSL https://raw.githubusercontent.com/idiey/antigravity-docs/main/install.sh | bash -s -- --plan
 
 set -e
 
@@ -22,9 +23,14 @@ echo ""
 
 # Parse arguments
 INSTALL_TARGET="global"
+INSTALL_PLAN=""
+FORCE_INSTALL=""
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         -p|--project) INSTALL_TARGET="project" ;;
+        --plan) INSTALL_PLAN="true" ;;
+        -u|--update) FORCE_INSTALL="true" ;;
+        -f|--force) FORCE_INSTALL="true" ;;
         *) echo "Unknown parameter passed: $1"; exit 1 ;;
     esac
     shift
@@ -152,16 +158,39 @@ install_file "workflows/docs-init.md" "$WORKFLOWS_DIR/docs-init.md" "/docs-init 
 install_file "workflows/docs-lint.md" "$WORKFLOWS_DIR/docs-lint.md" "/docs-lint command"
 install_file "workflows/docs-audit.md" "$WORKFLOWS_DIR/docs-audit.md" "/docs-audit command"
 install_file "workflows/docs-update-toc.md" "$WORKFLOWS_DIR/docs-update-toc.md" "/docs-update-toc command"
+install_file "workflows/docs-update.md" "$WORKFLOWS_DIR/docs-update.md" "/docs-update command"
+
+# Install optional plan workflows
+if [ -n "$INSTALL_PLAN" ]; then
+    echo ""
+    echo -e "${BLUE}Installing Plan workflows...${NC}"
+    install_file "workflows/plan-init.md" "$WORKFLOWS_DIR/plan-init.md" "/plan-init command"
+    install_file "workflows/plan-daily.md" "$WORKFLOWS_DIR/plan-daily.md" "/plan-daily command"
+    install_file "workflows/plan-sprint.md" "$WORKFLOWS_DIR/plan-sprint.md" "/plan-sprint command"
+    install_file "workflows/plan-checkpoint.md" "$WORKFLOWS_DIR/plan-checkpoint.md" "/plan-checkpoint command"
+fi
 
 echo ""
 echo -e "${GREEN}Antigravity Documentation Standards installed successfully!${NC}"
 echo ""
-echo "Usage:"
+echo "Documentation Commands:"
 echo "   /docs              - View documentation standards and templates"
 echo "   /docs-init         - Initialize docs folder structure"
 echo "   /docs-lint         - Lint and fix markdown files"
 echo "   /docs-audit        - Audit documentation completeness"
 echo "   /docs-update-toc   - Update Table of Contents"
+echo "   /docs-update       - Update antigravity-docs to latest version"
+if [ -n "$INSTALL_PLAN" ]; then
+echo ""
+echo "Planning Commands:"
+echo "   /plan-init         - Initialize .plan folder structure"
+echo "   /plan-daily        - Create/update daily achievement log"
+echo "   /plan-sprint       - Manage sprint planning"
+echo "   /plan-checkpoint   - Save/load work checkpoints"
+else
+echo ""
+echo "Tip: Run with --plan flag to install planning workflows"
+fi
 echo ""
 echo "Guidelines Location:"
 echo "   $GEMINI_DIR/docs-guidelines.md"

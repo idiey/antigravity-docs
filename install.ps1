@@ -1,14 +1,19 @@
 #
 # Antigravity Docs Installer for Windows
 # Documentation Standards for Google Antigravity/Gemini Code
-# Version: 1.2.0
+# Version: 1.3.0
 # Usage: irm https://raw.githubusercontent.com/idiey/antigravity-docs/main/install.ps1 -OutFile i.ps1; .\i.ps1 -Project; rm i.ps1
 #
 
 param(
     [switch]$Force,
-    [switch]$Project
+    [switch]$Project,
+    [switch]$Plan,
+    [switch]$Update
 )
+
+# Treat -Update as -Force
+if ($Update) { $Force = $true }
 
 $ErrorActionPreference = "Stop"
 
@@ -128,16 +133,39 @@ Install-File "workflows/docs-init.md" (Join-Path $WorkflowsDir "docs-init.md") "
 Install-File "workflows/docs-lint.md" (Join-Path $WorkflowsDir "docs-lint.md") "/docs-lint command"
 Install-File "workflows/docs-audit.md" (Join-Path $WorkflowsDir "docs-audit.md") "/docs-audit command"
 Install-File "workflows/docs-update-toc.md" (Join-Path $WorkflowsDir "docs-update-toc.md") "/docs-update-toc command"
+Install-File "workflows/docs-update.md" (Join-Path $WorkflowsDir "docs-update.md") "/docs-update command"
+
+# Install optional plan workflows
+if ($Plan) {
+    Write-Host ""
+    Write-Host "Installing Plan workflows..." -ForegroundColor Blue
+    Install-File "workflows/plan-init.md" (Join-Path $WorkflowsDir "plan-init.md") "/plan-init command"
+    Install-File "workflows/plan-daily.md" (Join-Path $WorkflowsDir "plan-daily.md") "/plan-daily command"
+    Install-File "workflows/plan-sprint.md" (Join-Path $WorkflowsDir "plan-sprint.md") "/plan-sprint command"
+    Install-File "workflows/plan-checkpoint.md" (Join-Path $WorkflowsDir "plan-checkpoint.md") "/plan-checkpoint command"
+}
 
 Write-Host ""
 Write-Host "Antigravity Documentation Standards installed successfully!" -ForegroundColor Green
 Write-Host ""
-Write-Host "Usage:"
+Write-Host "Documentation Commands:"
 Write-Host "   /docs              - View documentation standards and templates"
 Write-Host "   /docs-init         - Initialize docs folder structure"
 Write-Host "   /docs-lint         - Lint and fix markdown files"
 Write-Host "   /docs-audit        - Audit documentation completeness"
 Write-Host "   /docs-update-toc   - Update Table of Contents"
+Write-Host "   /docs-update       - Update antigravity-docs to latest version"
+if ($Plan) {
+    Write-Host ""
+    Write-Host "Planning Commands:"
+    Write-Host "   /plan-init         - Initialize .plan folder structure"
+    Write-Host "   /plan-daily        - Create/update daily achievement log"
+    Write-Host "   /plan-sprint       - Manage sprint planning"
+    Write-Host "   /plan-checkpoint   - Save/load work checkpoints"
+} else {
+    Write-Host ""
+    Write-Host "Tip: Run with -Plan flag to install planning workflows"
+}
 Write-Host ""
 Write-Host "Guidelines Location:"
 Write-Host "   $GeminiDir\docs-guidelines.md"
