@@ -36,14 +36,15 @@ while [[ "$#" -gt 0 ]]; do
     shift
 done
 
-# Detect installation method
-if [ -d ".git" ] && [ -f "docs-guidelines.md" ]; then
+# Detect installation method - only local if we're in the actual antigravity-docs repo
+# Check for workflows folder which only exists in the source repo
+if [ -d ".git" ] && [ -f "workflows/docs.md" ] && [ -f "install.sh" ]; then
     # Running from cloned repository
     INSTALL_MODE="local"
     REPO_DIR="$(pwd)"
     echo -e "${BLUE}Info: Installing from local repository${NC}"
 else
-    # Running from curl | bash
+    # Running from curl | bash or from a project that has docs installed
     INSTALL_MODE="remote"
     REPO_URL="https://raw.githubusercontent.com/idiey/antigravity-docs/main"
     echo -e "${BLUE}Info: Installing from remote repository${NC}"

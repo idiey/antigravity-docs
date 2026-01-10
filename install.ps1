@@ -25,9 +25,10 @@ Write-Host ""
 # GitHub raw URL base
 $RepoBase = "https://raw.githubusercontent.com/idiey/antigravity-docs/main"
 
-# Detect installation mode
+# Detect installation mode - only local if we're in the actual antigravity-docs repo
+# Check for workflows folder which only exists in the source repo
 $InstallMode = "remote"
-if ((Test-Path ".git") -and (Test-Path "docs-guidelines.md")) {
+if ((Test-Path ".git") -and (Test-Path "workflows/docs.md") -and (Test-Path "install.ps1")) {
     $InstallMode = "local"
     $RepoDir = Get-Location
     Write-Host "Info: Installing from local repository" -ForegroundColor Blue
